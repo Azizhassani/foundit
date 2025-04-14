@@ -1,12 +1,12 @@
 from django import forms
-from .models import founditem
+from .models import Founditem
 from django.contrib.auth.models import User
 
 
 class foundForm(forms.ModelForm):
     class Meta:
-        model = founditem
-        fields = ['name','description','date_lost','location']
+        model = Founditem
+        fields = ['name','description','date_found','location']
 
 
 class registerform(forms.ModelForm):
