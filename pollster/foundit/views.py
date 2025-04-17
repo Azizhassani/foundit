@@ -75,7 +75,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 # Custom JWT View
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
     
 
  
@@ -134,3 +133,55 @@ class LostItemDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return LostItem.objects.filter(user=self.request.user)
+
+
+#------------------
+
+from .models import FoundItemRequest, Founditem
+from .serializers import ItemRequestSerializer
+from rest_framework import generics, permissions
+from rest_framework.exceptions import ValidationError
+
+class CreateItemRequestView(generics.CreateAPIView):
+    serializer_class = ItemRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        found_item_id = self.request.data.get('found_item')
+        found_item = Founditem.objects.get(id=found_item_id)
+
+        # Prevent same user from requesting their own item
+        if found_item.user == self.request.user:
+            raise ValidationError("You cannot request your own found item.")
+
+        # Prevent duplicate requests from the same user
+        if FoundItemRequest.objects.filter(found_item=found_item, requester=self.request.user).exists():
+            raise ValidationError("You have already requested this item.")
+
+        serializer.save(found_item=found_item, requester=self.request.user)
+
+class UpdateItemRequestStatusView(generics.UpdateAPIView):
+    queryset = FoundItemRequest.objects.all()
+    serializer_class = ItemRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_update(self, serializer):
+        item_request = self.get_object()
+
+        # Only the founder (who posted the found item) can update the request status
+        if item_request.found_item.user != self.request.user:
+            raise ValidationError("You do not have permission to update this request.")
+
+        serializer.save()
+
+
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
+class ListIncomingRequestsView(generics.ListAPIView):
+    serializer_class = ItemRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get requests where the current user is the one who posted the found item
+        return FoundItemRequest.objects.filter(found_item__user=self.request.user)

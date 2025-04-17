@@ -48,3 +48,19 @@ class LostItem(models.Model):
     def __str__(self):
         return f"{self.title} ({self.status})"
 
+
+class FoundItemRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+    ]
+
+    requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='found_item_requests')
+    found_item = models.ForeignKey(Founditem, on_delete=models.CASCADE, related_name='requests')
+    message = models.TextField(blank=True, null=True)  #message to explain ownership
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Request by {self.requester.email} for {self.found_item.title} - {self.status}"

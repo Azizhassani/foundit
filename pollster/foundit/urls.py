@@ -3,7 +3,8 @@ from .views import index, add_lost_item, register, user_logout
 from .views import (
     FoundItemListCreateAPIView, FoundItemDetailAPIView,
     LostItemListCreateAPIView, LostItemDetailAPIView,
-    CustomTokenObtainPairView
+    CustomTokenObtainPairView,CreateItemRequestView,
+    UpdateItemRequestStatusView,ListIncomingRequestsView
 )
 
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -18,6 +19,9 @@ urlpatterns = [
     path('api/found-items/<int:pk>/', FoundItemDetailAPIView.as_view(), name='found_item_detail'),
     path('api/lost-items/', LostItemListCreateAPIView.as_view(), name='lost_items_list'),
     path('api/lost-items/<int:pk>/', LostItemDetailAPIView.as_view(), name='lost_item_detail'),
+    path('api/item-requests/', CreateItemRequestView.as_view(), name='create_item_request'),
+    path('api/item-requests/<int:pk>/', UpdateItemRequestStatusView.as_view(), name='update_item_request'),
+    path('api/incoming-requests/', ListIncomingRequestsView.as_view(), name='incoming_requests'),
 
     # JWT Authentication Endpoints
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login to get token (access)
