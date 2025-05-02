@@ -4,7 +4,8 @@ from .views import (
     FoundItemListCreateAPIView, FoundItemDetailAPIView,
     LostItemListCreateAPIView, LostItemDetailAPIView,
     CustomTokenObtainPairView,CreateItemRequestView,
-    UpdateItemRequestStatusView,ListIncomingRequestsView
+    UpdateItemRequestStatusView,ListIncomingRequestsView,
+    AllFoundItemsAPIView
 )
 
 from rest_framework_simplejwt.views import TokenRefreshView
@@ -15,6 +16,7 @@ urlpatterns = [
     path('logout/', user_logout, name='logout'),
 
     # API Endpoints
+    path('api/found-items/all/', AllFoundItemsAPIView.as_view(), name='all_found_items'),
     path('api/found-items/', FoundItemListCreateAPIView.as_view(), name='found_items_list'),
     path('api/found-items/<int:pk>/', FoundItemDetailAPIView.as_view(), name='found_item_detail'),
     path('api/lost-items/', LostItemListCreateAPIView.as_view(), name='lost_items_list'),

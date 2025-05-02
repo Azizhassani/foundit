@@ -88,6 +88,14 @@ from .models import Founditem
 from .serializers import FoundItemSerializer
 
 # list all found items (get) and creat new found item (post)
+class AllFoundItemsAPIView(generics.ListAPIView):
+    serializer_class = FoundItemSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Founditem.objects.all()
+    
+# list user's found items
 class FoundItemListCreateAPIView(generics.ListCreateAPIView):
     serializer_class = FoundItemSerializer
     permission_classes = [IsAuthenticated] # API requires authentication(JWT)
